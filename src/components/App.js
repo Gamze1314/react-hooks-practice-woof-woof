@@ -3,38 +3,36 @@ import { DogBar } from "./DogBar";
 import { DogContainer } from "./DogContainer";
 
 function App() {
-  const [pups, setPups] = useState([]);
-  const [pupId, setPupId] = useState(null);
-  const [selectedPup, setSelectedPup] = useState([]);
+  const [allDogs, setAllDogs] = useState([]);
+  const [selectedDog, setSelectedDog] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:3001/pups")
       .then((res) => res.json())
-      .then((pupsData) => setPups(pupsData));
+      .then((data) => setAllDogs(data));
   }, []);
 
-  useEffect(() => {
-    if (pupId) {
-      fetch(`http://localhost:3001/pups/${pupId}`)
-        .then((res) => res.json())
-        .then((selectedPupData) => setSelectedPup(selectedPupData));
-    }
-  }, [pupId]);
-
-  const showDetails = (id) => {
-    setPupId(id);
+  const onShowDetails = (id) => {
+    const dogObj = allDogs.find((d) => d.id === id); // Find the selected dog from allDogs array
+    setSelectedDog([dogObj]); // Update selectedDog state with the selected dog
   };
+  
+  console.log(selectedDog)
 
-  return (
-    <div className="App">
-      <DogBar 
-      pups={pups} 
-      setPups={setPups} 
-      onShowDetails={showDetails} 
-      />
-      <DogContainer selectedPup={selectedPup} pupId={pupId} />
-    </div>
-  );
+  if (allDogs.length > 0) {
+    return (
+      <div className="App">
+        <DogBar allDogs={allDogs} onShowDetails={onShowDetails} />
+        <DogContainer selectedDog={selectedDog} />
+      </div>
+    );
+  } else {
+    return (
+      <div className="App">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 }
 
 export default App;
