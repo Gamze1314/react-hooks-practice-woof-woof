@@ -5,6 +5,16 @@ import { DogContainer } from "./DogContainer";
 function App() {
   const [allDogs, setAllDogs] = useState([]);
   const [selectedDog, setSelectedDog] = useState([]);
+  const [isFilterOn, setIsFilterOn] = useState(false);
+
+
+  const dogsToDisplay = allDogs.filter((d) => {
+    return isFilterOn ? d.isGoodDog === true : d
+  })
+
+  const onFilterMode = () => {
+    setIsFilterOn(!isFilterOn)
+}
 
   useEffect(() => {
     fetch("http://localhost:3001/pups")
@@ -16,13 +26,18 @@ function App() {
     const dogObj = allDogs.find((d) => d.id === id); // Find the selected dog from allDogs array
     setSelectedDog([dogObj]); // Update selectedDog state with the selected dog
   };
-  
-  console.log(selectedDog)
 
   if (allDogs.length > 0) {
     return (
       <div className="App">
-        <DogBar allDogs={allDogs} onShowDetails={onShowDetails} />
+        <DogBar
+          isFilterOn={isFilterOn}
+          setIsFilterOn={setIsFilterOn}
+          onFilterMode={onFilterMode}
+          allDogs={dogsToDisplay}
+          setAllDogs={setAllDogs}
+          onShowDetails={onShowDetails}
+        />
         <DogContainer selectedDog={selectedDog} />
       </div>
     );
